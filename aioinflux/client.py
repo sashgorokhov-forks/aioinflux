@@ -9,11 +9,10 @@ from typing import (Union, AnyStr, Mapping, Iterable,
 from urllib.parse import urlencode
 
 import aiohttp
-import pandas as pd
 
-from .serialization import parse_data, make_df
+from .serialization import parse_data
 
-PointType = Union[AnyStr, Mapping, pd.DataFrame]
+PointType = Union[AnyStr, Mapping]
 
 # Aioinflux uses logging mainly for debugging purposes.
 # Please attach your own handlers if you need logging.
@@ -28,10 +27,7 @@ def runner(coro):
         if self.mode == 'async':
             return coro(self, *args, **kwargs)
         resp = self._loop.run_until_complete(coro(self, *args, **kwargs))
-        if self.mode == 'dataframe' and coro.__name__ == 'query':
-            return make_df(resp)
-        else:
-            return resp
+        return resp
 
     return inner
 
